@@ -1,0 +1,21 @@
+
+.tareas {
+    background-color: rgba(115, 187, 235, 0.884); 
+    padding: 1rem; 
+    border-radius: 0.5rem; 
+    max-height: 380px; 
+    overflow-y: auto; 
+}
+
+.tareas::-webkit-scrollbar {
+    width: 8px; /* Ancho de la barra de desplazamiento */
+}
+
+.tareas::-webkit-scrollbar-thumb {
+    background-color: #2db1f9; 
+    border-radius: 10px; 
+}
+
+.tareas::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1); 
+}

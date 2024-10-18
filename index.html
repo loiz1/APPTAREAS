@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
+    <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">
+    <link rel="stylesheet" href="estilos.css"> 
+    <title>Lista de Tareas</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body>
+    
+    <div class="relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
+        <div>
+            <div class="flex items-center bg-slate-50 p-4 pb-2 justify-between">
+                <h2 class="text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Lista de Tareas</h2>
+                <div class="flex w-12 items-center justify-end">
+                    <a href="conf.html">                    
+                        <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent ">
+                            <img src="https://cdn-icons-png.flaticon.com/512/1756/1756647.png" alt="Configuración" class="w-6 h-6">
+                        </button>
+                    </a>
+                </div>
+            </div>
+            <div class="add_task">
+                <form class="flex flex-col min-w-40 h-12 w-full" id="taskForm">
+                    <input type="text" id="tareaInput" placeholder="Agrega tu tarea" class="border rounded-md p-2" required>
+                    <input type="submit" class="boton mt-2 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2" value="Agregar Tarea" />
+                </form>
+            </div>
+        </div>
+
+        <div class="tareas" style="max-height: 320px; overflow-y: auto;">
+            <ul class="lista" id="lista">
+                <!-- Las tareas se añadirán aquí -->
+            </ul>
+        </div>
+        <div class="flex justify-around overflow-hidden px-5 pb-5">
+            <a href="task.html">
+                <button class="flex max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2">
+                    Tareas Completadas
+                </button>
+            </a>
+            <a href="team.html">
+                <button class="flex max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2">
+                    Team
+                </button>
+            </a>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">
+    <link rel="stylesheet" href="estilos.css">
+    <title>Tareas Pendientes</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body>
+    <div class="relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
+        <div>
+            <div class="flex items-center bg-slate-50 p-4 pb-2 justify-between">
+                <h2 class="text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Pendientes</h2>
+            </div>
+        </div>
+
+        <div class="tareas" style="max-height: 400px; overflow-y: auto;">
+            <ul class="lista" id="tareas-lista"></ul>
+        </div>
+
+        <div class="flex justify-around overflow-hidden px-5 pb-5">
+            <a href="index.html">
+                <button class="flex max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2">
+                    Regresar
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Cargar las tareas desde el almacenamiento local
+        const tareasAlmacenadas = JSON.parse(localStorage.getItem('tareas')) || [];
+        const lista = document.getElementById('tareas-lista');
+
+        tareasAlmacenadas.forEach(tarea => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="index.html">${tarea}</a>`;
+            lista.appendChild(li);
+        });
+        setTimeout(function() {
+            window.location.href = 'index.html';
+        }, 3000); // 3000 milisegundos = 3 segundos
+    </script>
+</body>
+</html>
