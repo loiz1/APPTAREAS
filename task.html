@@ -5,80 +5,77 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilos.css">
-    <title>Tareas Pendientes</title>
+    <title>Tareas Completadas</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
-    <div class="relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
-        <div>
-            <div class="flex items-center bg-slate-50 p-4 pb-2 justify-between">
-                <h2 class="text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Realizadas</h2>
+    <div class="app-container relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
+        <div class="container mx-auto p-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="user-info">
+                    <img src="https://cdn-icons-png.flaticon.com/512/11356/11356308.png" alt="Usuario" class="w-8 h-8 mr-2">
+                    <span id="userName" class="text-[#1e3a8a] font-semibold"></span>
+                </div>
+                <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Completadas</h1>
+                <div class="menu-button">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1756/1756647.png" alt="Menú" class="cursor-pointer w-8 h-8" id="menuButton">
+                    <div class="dropdown" id="dropdownMenu">
+                        <a href="settings.html">Configuración</a>
+                        <a href="login.html" id="logoutButton">Salir</a>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="tareas" style="max-height: 400px; overflow-y: auto;">
-            <ul class="lista" id="tareas-lista"></ul>
-        </div>
+            <!-- Lista de tareas completadas -->
+            <div class="tareas mt-4" style="max-height: 380px; overflow-y: auto;">
+                <ul class="lista" id="lista"></ul>
+            </div>
 
-        <div class="flex justify-around overflow-hidden px-5 pb-5">
-            <a href="index.html">
-                <button class="flex max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2">
-                    Volver
-                </button>
-            </a>
+            <!-- Botón inferior -->
+            <div class="botones-inferiores mt-4 flex justify-around">
+                <a href="index.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Volver a Pendientes</a>
+                <a href="team.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Team</a>
+            </div>
         </div>
     </div>
 
     <script>
-        // Cargar las tareas completadas desde el almacenamiento local
+        // Mostrar nombre de usuario actual
+        const userNameElement = document.getElementById('userName');
+        const storedUsername = localStorage.getItem('username'); // Obtener el nombre de usuario almacenado
+
+        // Cargar todos los usuarios registrados desde localStorage
+        const usuariosRegistrados = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
+        const usuarioActual = usuariosRegistrados.find(usuario => usuario.username === storedUsername);
+        userNameElement.textContent = usuarioActual ? usuarioActual.username : 'Usuario no encontrado';
+
+        // Cargar tareas completadas desde localStorage
         const tareasCompletadas = JSON.parse(localStorage.getItem('tareasCompletadas')) || [];
-        const lista = document.getElementById('tareas-lista');
-    
-        // Mostrar las tareas completadas en la lista
-        function mostrarTareasCompletadas() {
-            lista.innerHTML = ''; // Limpiar la lista antes de mostrar
-            tareasCompletadas.forEach(tarea => {
-                const li = document.createElement('li');
-                li.innerHTML = `<span>${tarea.text}</span>`; // Solo mostrar el texto de la tarea completada
-                lista.appendChild(li);
+        const lista = document.getElementById('lista');
+
+        tareasCompletadas.forEach(tarea => {
+            const listItem = document.createElement('li');
+            listItem.className = 'flex items-center justify-between mb-2'; // Alinear contenido
+            listItem.innerHTML = `
+                <span>${tarea.text}</span>
+                <button class="eliminarButton bg-red-500 text-white rounded py-1 px-2 ml-2">Eliminar</button>
+            `;
+            lista.appendChild(listItem); // Agregar la tarea a la lista
+
+            // Agregar evento al botón de eliminar
+            listItem.querySelector('.eliminarButton').addEventListener('click', function() {
+                const index = tareasCompletadas.indexOf(tarea);
+                if (index > -1) {
+                    tareasCompletadas.splice(index, 1);
+                    localStorage.setItem('tareasCompletadas', JSON.stringify(tareasCompletadas));
+                }
+                lista.removeChild(listItem); // Quitar la tarea de la lista
             });
-        }
-    
-        // Cargar las tareas al cargar la página
-        document.addEventListener('DOMContentLoaded', mostrarTareasCompletadas);
-        const listaTareasCompletadas = document.getElementById('tareas-lista');
-
-// Función para mostrar las tareas completadas en la lista
-function mostrarTareasCompletadas() {
-    listaTareasCompletadas.innerHTML = ''; // Limpiar la lista antes de mostrar
-    tareasCompletadas.forEach((tarea, index) => {
-        const li = document.createElement('li');
-        li.className = "flex justify-between items-center"; // Estilo para alinear el contenido
-        li.innerHTML = `
-            <span>${tarea.text}</span>
-            <button id="btn-eliminar-${index}" class="ml-2 bg-red-500 text-white rounded px-1 py-0.5 text-sm">Eliminar</button>
-        `;
-        listaTareasCompletadas.appendChild(li);
-
-        // Agregar un evento al botón de eliminar
-        const btnEliminar = li.querySelector(`button[id="btn-eliminar-${index}"]`);
-        btnEliminar.addEventListener('click', function() {
-            const confirmacion = confirm("¿Estás seguro de que quieres eliminar esta tarea?");
-            if (confirmacion) {
-                // Eliminar la tarea del arreglo y del localStorage
-                tareasCompletadas.splice(index, 1);
-                localStorage.setItem('tareasCompletadas', JSON.stringify(tareasCompletadas)); // Actualizar el almacenamiento local
-                mostrarTareasCompletadas(); // Actualizar la lista mostrada
-            }
         });
-    });
-}
-
-// Cargar las tareas completadas al cargar la página
-document.addEventListener('DOMContentLoaded', mostrarTareasCompletadas);
     </script>
-    
 </body>
 </html>
+
 

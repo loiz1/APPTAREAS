@@ -2,54 +2,144 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">
-    <link rel="stylesheet" href="estilos.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilos.css">
     <title>Lista de Tareas</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 </head>
 <body>
-    
-    <div class="relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
-        <div>
-            <div class="flex items-center bg-slate-50 p-4 pb-2 justify-between">
-                <h2 class="text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Lista de Tareas</h2>
-                <div class="flex w-12 items-center justify-end">
-                    <a href="conf.html">                    
-                        <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-transparent ">
-                            <img src="https://cdn-icons-png.flaticon.com/512/1756/1756647.png" alt="Configuración" class="w-6 h-6">
-                        </button>
-                    </a>
+    <div class="app-container relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
+        <div class="container mx-auto p-4">
+            <div class="flex items-center justify-between mb-4">
+                <div class="user-info">
+                    <img src="https://cdn-icons-png.flaticon.com/512/11356/11356308.png" alt="Usuario" class="w-8 h-8 mr-2">
+                    <span id="userName" class="text-[#1e3a8a] font-semibold"></span>
+                </div>
+                <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Pendientes</h1>
+                <div class="menu-button">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1756/1756647.png" alt="Menú" class="cursor-pointer w-8 h-8" id="menuButton">
+                    <div class="dropdown" id="dropdownMenu">
+                        <a href="settings.html">Configuración</a>
+                        <a href="login.html" id="logoutButton">Salir</a>
+                    </div>
                 </div>
             </div>
-            <div class="add_task">
-                <form class="flex flex-col min-w-40 h-12 w-full" id="taskForm">
-                    <input type="text" id="tareaInput" placeholder="Agrega tu tarea" class="border rounded-md p-2" required>
-                    <input type="submit" class="boton mt-2 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2" value="Agregar Tarea" />
+
+            <!-- Formulario para agregar tareas -->
+            <div class="add_task mt-4">
+                <form id="taskForm" class="flex flex-col w-full">
+                    <input type="text" id="tareaInput" placeholder="Agrega tu tarea" class="input-tarea border rounded-md p-2" required>
+                    <input type="submit" class="btn-enviar bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center" value="Agregar Tarea">
                 </form>
             </div>
-        </div>
+            
+            <!-- Lista de tareas -->
+            <div class="tareas mt-4" style="max-height: 380px; overflow-y: auto;">
+                <ul class="lista" id="lista"></ul>
+            </div>
 
-        <div class="tareas" style="max-height: 320px; overflow-y: auto;">
-            <ul class="lista" id="lista">
-                <!-- Las tareas se añadirán aquí -->
-            </ul>
-        </div>
-        <div class="flex justify-around overflow-hidden px-5 pb-5">
-            <a href="task.html">
-                <button class="flex max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2">
-                    Tareas Completadas
-                </button>
-            </a>
-            <a href="team.html">
-                <button class="flex max-w-[240px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-[#2db1f9] text-[#1e3a8a] text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-2">
-                    Team
-                </button>
-            </a>
+            <!-- Botones inferiores -->
+            <div class="botones-inferiores mt-4 flex justify-around">
+                <a href="task.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Tareas Completadas</a>
+                <a href="team.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Team</a>
+            </div>
         </div>
     </div>
-    <script src="js/main.js"></script>
+
+    <script>
+        // Mostrar nombre de usuario actual
+        const userNameElement = document.getElementById('userName');
+        const storedUsername = localStorage.getItem('username'); // Obtener el nombre de usuario almacenado
+
+        // Cargar todos los usuarios registrados desde localStorage
+        const usuariosRegistrados = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
+        const usuarioActual = usuariosRegistrados.find(usuario => usuario.username === storedUsername);
+        userNameElement.textContent = usuarioActual ? usuarioActual.username : 'Usuario no encontrado';
+
+        // Manejo del menú desplegable
+        const menuButton = document.getElementById('menuButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        menuButton.addEventListener('click', () => {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Cerrar menú al hacer clic en el documento
+        document.addEventListener('click', (event) => {
+            const isClickInside = menuButton.contains(event.target) || dropdownMenu.contains(event.target);
+            if (!isClickInside) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            dropdownMenu.style.display = 'none'; // Ocultar menú
+        });
+
+        // Manejo del formulario de tareas
+        const taskForm = document.getElementById('taskForm');
+        const tareaInput = document.getElementById('tareaInput');
+        const lista = document.getElementById('lista');
+
+        // Cargar tareas existentes desde localStorage al inicio
+        const tareasPendientes = JSON.parse(localStorage.getItem('tareasPendientes')) || [];
+        
+        // Limpiar la lista antes de cargar tareas
+        lista.innerHTML = '';
+
+        // Agregar tareas al DOM desde localStorage
+        tareasPendientes.forEach(tarea => agregarTarea(tarea));
+
+        taskForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            const tareaText = tareaInput.value;
+
+            // Verificar si la tarea ya existe antes de agregar
+            if (!tareasPendientes.includes(tareaText)) {
+                agregarTarea(tareaText);
+                tareasPendientes.push(tareaText); // Agregar la tarea a la lista de tareas pendientes
+                localStorage.setItem('tareasPendientes', JSON.stringify(tareasPendientes)); // Guardar en localStorage
+                tareaInput.value = ''; // Limpiar el campo de entrada
+            } else {
+                alert("Esta tarea ya existe."); // Avisar si la tarea ya existe
+            }
+        });
+
+        function agregarTarea(tareaText) {
+            const listItem = document.createElement('li');
+            listItem.className = 'flex items-center justify-between mb-2'; // Alinear contenido
+            listItem.innerHTML = `
+                <span>${tareaText}</span>
+                <input type="checkbox" class="ml-4" />
+            `;
+
+            lista.appendChild(listItem); // Agregar la tarea a la lista
+
+            // Agregar evento al checkbox
+            listItem.querySelector('input[type="checkbox"]').addEventListener('change', function() {
+                if (this.checked) {
+                    // Guardar la tarea completada en el localStorage
+                    const tareasCompletadas = JSON.parse(localStorage.getItem('tareasCompletadas')) || [];
+                    tareasCompletadas.push({ text: tareaText });
+                    localStorage.setItem('tareasCompletadas', JSON.stringify(tareasCompletadas));
+
+                    // Eliminar la tarea de las pendientes
+                    const index = tareasPendientes.indexOf(tareaText);
+                    if (index > -1) {
+                        tareasPendientes.splice(index, 1);
+                        localStorage.setItem('tareasPendientes', JSON.stringify(tareasPendientes));
+                    }
+
+                    // Actualizar la lista de tareas pendientes
+                    lista.removeChild(listItem); // Quitar la tarea de la lista
+                }
+            });
+        }
+    </script>
 </body>
 </html>
+
+
+
