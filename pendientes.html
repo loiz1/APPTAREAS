@@ -8,6 +8,39 @@
     <link rel="stylesheet" href="estilos.css">
     <title>Tareas Pendientes</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Inicializar Supabase
+        const supabaseUrl = 'https://rpuuislyejuoovdldnss.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwdXVpc2x5ZWp1b292ZGxkbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzODYyMjgsImV4cCI6MjA0NDk2MjIyOH0.TPtDnn-o-RN0vm69RKvBUEWfgqZUzQAvvKkR5JxFEoM';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        async function cargarTareas() {
+            const username = localStorage.getItem('username'); // Obtener el nombre de usuario actual
+
+            // Obtener las tareas del usuario desde la base de datos
+            const { data: tareas, error } = await supabase
+                .from('tareas') // Asegúrate de que esta sea la tabla correcta
+                .select('*')
+                .eq('username', username); // Suponiendo que hay una columna que relaciona tareas con usuarios
+
+            if (error) {
+                console.error('Error al cargar tareas:', error);
+                alert('No se pudieron cargar las tareas. Inténtalo más tarde.');
+                return;
+            }
+
+            const lista = document.getElementById('tareas-lista');
+            tareas.forEach(tarea => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="index.html">${tarea.descripcion}</a>`; // Asegúrate de que "descripcion" sea la columna correcta
+                lista.appendChild(li);
+            });
+        }
+
+        window.onload = cargarTareas; // Cargar tareas al cargar la página
+    </script>
 </head>
 <body>
     <div class="relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
@@ -29,20 +62,6 @@
             </a>
         </div>
     </div>
-
-    <script>
-        // Cargar las tareas desde el almacenamiento local
-        const tareasAlmacenadas = JSON.parse(localStorage.getItem('tareas')) || [];
-        const lista = document.getElementById('tareas-lista');
-
-        tareasAlmacenadas.forEach(tarea => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="index.html">${tarea}</a>`;
-            lista.appendChild(li);
-        });
-        setTimeout(function() {
-            window.location.href = 'index.html';
-        }, 3000); // 3000 milisegundos = 3 segundos
-    </script>
 </body>
 </html>
+

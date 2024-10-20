@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="estilos.css">
     <title>Lista de Tareas</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        .dropdown {
+            display: none; 
+        }
+        .dropdown.visible {
+            display: block; 
+        }
+    </style>
 </head>
 <body>
     <div class="app-container relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
@@ -16,7 +24,7 @@
             <div class="flex items-center justify-between mb-4">
                 <div class="user-info">
                     <img src="https://cdn-icons-png.flaticon.com/512/11356/11356308.png" alt="Usuario" class="w-8 h-8 mr-2">
-                    <span id="userName" class="text-[#1e3a8a] font-semibold"></span>
+                    <span id="username" class="text-[#1e3a8a] font-semibold"></span>
                 </div>
                 <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Pendientes</h1>
                 <div class="menu-button">
@@ -49,97 +57,114 @@
         </div>
     </div>
 
-    <script>
-        // Mostrar nombre de usuario actual
-        const userNameElement = document.getElementById('userName');
-        const storedUsername = localStorage.getItem('username'); // Obtener el nombre de usuario almacenado
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        // Cargar todos los usuarios registrados desde localStorage
-        const usuariosRegistrados = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
-        const usuarioActual = usuariosRegistrados.find(usuario => usuario.username === storedUsername);
-        userNameElement.textContent = usuarioActual ? usuarioActual.username : 'Usuario no encontrado';
+        // URL y Key de tu proyecto de Supabase
+        const supabaseUrl = 'https://rpuuislyejuoovdldnss.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwdXVpc2x5ZWp1b292ZGxkbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzODYyMjgsImV4cCI6MjA0NDk2MjIyOH0.TPtDnn-o-RN0vm69RKvBUEWfgqZUzQAvvKkR5JxFEoM';
 
-        // Manejo del menú desplegable
+        // Crear el cliente de Supabase
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+        const lista = document.getElementById('lista');
+        const tareaInput = document.getElementById('tareaInput');
+        const taskForm = document.getElementById('taskForm');
+        const userNameElement = document.getElementById('username'); // ID para mostrar el usuario
         const menuButton = document.getElementById('menuButton');
         const dropdownMenu = document.getElementById('dropdownMenu');
-        menuButton.addEventListener('click', () => {
-            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-        });
 
-        // Cerrar menú al hacer clic en el documento
-        document.addEventListener('click', (event) => {
-            const isClickInside = menuButton.contains(event.target) || dropdownMenu.contains(event.target);
-            if (!isClickInside) {
-                dropdownMenu.style.display = 'none';
+        // Función para mostrar el ID del usuario
+        async function mostrarNombreUsuario() {
+            const { data: { user }, error } = await supabase.auth.getUser(); // Obtener el usuario
+            if (error) {
+                console.error("Error al obtener el usuario:", error.message);
+                userNameElement.textContent = 'Usuario no registrado'; // Manejo del error
+                return;
             }
-        });
-
-        document.getElementById('logoutButton').addEventListener('click', () => {
-            dropdownMenu.style.display = 'none'; // Ocultar menú
-        });
-
-        // Manejo del formulario de tareas
-        const taskForm = document.getElementById('taskForm');
-        const tareaInput = document.getElementById('tareaInput');
-        const lista = document.getElementById('lista');
-
-        // Cargar tareas existentes desde localStorage al inicio
-        const tareasPendientes = JSON.parse(localStorage.getItem('tareasPendientes')) || [];
-        
-        // Limpiar la lista antes de cargar tareas
-        lista.innerHTML = '';
-
-        // Agregar tareas al DOM desde localStorage
-        tareasPendientes.forEach(tarea => agregarTarea(tarea));
-
-        taskForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevenir el envío del formulario
-            const tareaText = tareaInput.value;
-
-            // Verificar si la tarea ya existe antes de agregar
-            if (!tareasPendientes.includes(tareaText)) {
-                agregarTarea(tareaText);
-                tareasPendientes.push(tareaText); // Agregar la tarea a la lista de tareas pendientes
-                localStorage.setItem('tareasPendientes', JSON.stringify(tareasPendientes)); // Guardar en localStorage
-                tareaInput.value = ''; // Limpiar el campo de entrada
+            
+            if (user) {
+                userNameElement.textContent = user.id; // Mostrar el ID del usuario
             } else {
-                alert("Esta tarea ya existe."); // Avisar si la tarea ya existe
+                userNameElement.textContent = 'Usuario no registrado'; // Mensaje alternativo si no hay usuario
             }
-        });
+        }
 
-        function agregarTarea(tareaText) {
-            const listItem = document.createElement('li');
-            listItem.className = 'flex items-center justify-between mb-2'; // Alinear contenido
-            listItem.innerHTML = `
-                <span>${tareaText}</span>
-                <input type="checkbox" class="ml-4" />
-            `;
+        // Función para mostrar las tareas en la lista desde la base de datos
+        async function mostrarTareas() {
+            lista.innerHTML = ''; // Limpiar la lista antes de mostrar
 
-            lista.appendChild(listItem); // Agregar la tarea a la lista
+            // Obtener tareas desde la base de datos
+            const { data: tareasAlmacenadas, error } = await supabase
+                .from('tareas')
+                .select('*');
+            
+            if (error) {
+                console.error("Error al cargar tareas:", error.message);
+                return;
+            }
 
-            // Agregar evento al checkbox
-            listItem.querySelector('input[type="checkbox"]').addEventListener('change', function() {
-                if (this.checked) {
-                    // Guardar la tarea completada en el localStorage
-                    const tareasCompletadas = JSON.parse(localStorage.getItem('tareasCompletadas')) || [];
-                    tareasCompletadas.push({ text: tareaText });
-                    localStorage.setItem('tareasCompletadas', JSON.stringify(tareasCompletadas));
+            tareasAlmacenadas.forEach((tarea, index) => {
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-center"; // Estilo para alinear el contenido
+                li.innerHTML = `
+                    <span>${tarea.tarea}</span>
+                    <input type="checkbox" id="checkbox-${index}" ${tarea.completed ? 'checked' : ''}>
+                `;
+                lista.appendChild(li);
 
-                    // Eliminar la tarea de las pendientes
-                    const index = tareasPendientes.indexOf(tareaText);
-                    if (index > -1) {
-                        tareasPendientes.splice(index, 1);
-                        localStorage.setItem('tareasPendientes', JSON.stringify(tareasPendientes));
+                // Agregar un evento al checkbox
+                const checkbox = li.querySelector(`input[type="checkbox"]`);
+                checkbox.addEventListener('change', async function () {
+                    const confirmacion = confirm("¿Seguro que completaste esta tarea?");
+                    if (confirmacion) {
+                        // Marcar la tarea como completada en la base de datos
+                        const { error: updateError } = await supabase
+                            .from('tareas')
+                            .update({ completed: true })
+                            .eq('id', tarea.id); // Usar el id de la tarea
+
+                        if (updateError) {
+                            console.error("Error al actualizar tarea:", updateError.message);
+                        } else {
+                            mostrarTareas(); // Actualizar la lista mostrada
+                        }
+                    } else {
+                        checkbox.checked = false; // Desmarcar si no se confirma
                     }
-
-                    // Actualizar la lista de tareas pendientes
-                    lista.removeChild(listItem); // Quitar la tarea de la lista
-                }
+                });
             });
         }
+
+        // Manejar el evento de envío del formulario
+        taskForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            const nuevaTarea = tareaInput.value.trim();
+            if (nuevaTarea) {
+                // Agregar la tarea a la base de datos
+                const { data, error } = await supabase
+                    .from('tareas')
+                    .insert([{ tarea: nuevaTarea, completed: false }]);
+
+                if (error) {
+                    console.error("Error al agregar tarea:", error.message);
+                } else {
+                    tareaInput.value = ''; // Limpiar el campo de entrada
+                    mostrarTareas(); // Actualizar la lista mostrada
+                }
+            }
+        });
+
+        // Manejar el evento de clic en el botón del menú
+        menuButton.addEventListener('click', () => {
+            dropdownMenu.classList.toggle('visible'); // Cambiar entre mostrar y ocultar el menú
+        });
+
+        // Cargar las tareas y el ID del usuario al cargar la página
+        document.addEventListener('DOMContentLoaded', async () => {
+            await mostrarTareas();
+            await mostrarNombreUsuario();
+        });
     </script>
 </body>
 </html>
-
-
-

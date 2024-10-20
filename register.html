@@ -4,11 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900" />
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Noto+Sans:wght@400;500;700;900" />
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">
     <link rel="stylesheet" href="estilos.css"> 
     <title>Registro</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Inicializar Supabase
+        const supabaseUrl = 'https://rpuuislyejuoovdldnss.supabase.co'; // Reemplaza con tu URL de Supabase
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwdXVpc2x5ZWp1b292ZGxkbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzODYyMjgsImV4cCI6MjA0NDk2MjIyOH0.TPtDnn-o-RN0vm69RKvBUEWfgqZUzQAvvKkR5JxFEoM'; // Reemplaza con tu clave API
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Verificar si el usuario ya existe en la base de datos
+            const { data: existingUsers, error: checkError } = await supabase
+                .from('usuarios')
+                .select('username')
+                .eq('username', username);
+
+            if (checkError) {
+                alert('Error verificando usuario. Inténtalo más tarde.');
+                return;
+            }
+
+            if (existingUsers.length > 0) {
+                alert('El nombre de usuario ya está en uso. Por favor elige otro.');
+                return;
+            }
+
+            // Registrar al usuario en la base de datos
+            const { error } = await supabase
+                .from('usuarios')
+                .insert([{ username, password }]);
+
+            if (error) {
+                alert('Error al registrar usuario. Inténtalo más tarde.');
+            } else {
+                alert('Usuario registrado con éxito.');
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="app-container relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
@@ -27,31 +70,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            // Obtener los usuarios registrados del localStorage
-            const usuariosRegistrados = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
-
-            // Verificar si el usuario ya existe
-            if (usuariosRegistrados.some(user => user.username === username)) {
-                alert('El nombre de usuario ya está en uso. Por favor elige otro.');
-                return;
-            }
-
-            // Agregar el nuevo usuario al arreglo
-            usuariosRegistrados.push({ username, password });
-
-            // Guardar el nuevo arreglo en localStorage
-            localStorage.setItem('usuariosRegistrados', JSON.stringify(usuariosRegistrados));
-            window.location.href = "login.html";
-        });
-    </script>
 </body>
 </html>
-

@@ -9,6 +9,76 @@
     <link rel="stylesheet" href="estilos.css">
     <title>Lista de Usuarios Registrados</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Inicializar Supabase
+        const supabaseUrl = 'https://rpuuislyejuoovdldnss.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwdXVpc2x5ZWp1b292ZGxkbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzODYyMjgsImV4cCI6MjA0NDk2MjIyOH0.TPtDnn-o-RN0vm69RKvBUEWfgqZUzQAvvKkR5JxFEoM';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        async function cargarUsuarios() {
+            // Obtener todos los usuarios registrados desde la base de datos
+            const { data: usuarios, error } = await supabase
+                .from('usuarios') // Asegúrate de que esta sea la tabla correcta
+                .select('*');
+
+            if (error) {
+                console.error('Error al cargar usuarios:', error);
+                alert('No se pudieron cargar los usuarios. Inténtalo más tarde.');
+                return;
+            }
+
+            mostrarUsuariosRegistrados(usuarios);
+        }
+
+        // Función para mostrar usuarios registrados
+        function mostrarUsuariosRegistrados(usuarios) {
+            const listaUsuarios = document.getElementById('lista-usuarios');
+            listaUsuarios.innerHTML = ''; // Limpiar la lista antes de mostrar
+
+            usuarios.forEach((usuario, index) => {
+                const li = document.createElement('li');
+                li.className = "text-[#1e3a8a] font-semibold p-2 border-b border-gray-300"; // Ajustes de estilo
+                li.style.height = '40px'; // Altura fija para todos los campos
+                li.style.display = 'flex';
+                li.style.alignItems = 'center';
+                li.style.justifyContent = 'space-between'; // Espacio entre usuario y botón de eliminar
+
+                // Mostrar el nombre de usuario
+                li.textContent = usuario.username;
+
+                // Crear botón de eliminar
+                const eliminarButton = document.createElement('button');
+                eliminarButton.textContent = 'Eliminar';
+                eliminarButton.className = "bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600 transition-colors duration-300";
+                eliminarButton.onclick = () => eliminarUsuario(usuario.id); // Llamar a la función para eliminar el usuario
+                li.appendChild(eliminarButton); // Añadir el botón al elemento li
+
+                listaUsuarios.appendChild(li); // Añadir el li a la lista
+            });
+        }
+
+        // Función para eliminar un usuario
+        async function eliminarUsuario(id) {
+            // Eliminar el usuario de la base de datos
+            const { error } = await supabase
+                .from('usuarios') // Asegúrate de que esta sea la tabla correcta
+                .delete()
+                .eq('id', id); // Asumiendo que tienes una columna 'id' que identifica cada usuario
+
+            if (error) {
+                console.error('Error al eliminar usuario:', error);
+                alert('No se pudo eliminar el usuario. Inténtalo más tarde.');
+                return;
+            }
+
+            cargarUsuarios(); // Recargar la lista de usuarios
+        }
+
+        // Llamar a la función para cargar usuarios al cargar la página
+        document.addEventListener('DOMContentLoaded', cargarUsuarios);
+    </script>
 </head>
 <body>
     <div class="app-container relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
@@ -41,56 +111,11 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
     <script>
         // Mostrar nombre de usuario actual
-        const userNameElement = document.getElementById('userName');
+        const userNameElement = document.getElementById('username');
         const storedUsername = localStorage.getItem('username');
         userNameElement.textContent = storedUsername ? `${storedUsername}` : '';
-
-        // Cargar todos los usuarios registrados desde localStorage
-        let usuariosRegistrados = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
-
-        // Colocar el nombre del usuario actual en el primer campo si no está en el listado
-        if (storedUsername && !usuariosRegistrados.some(usuario => usuario.username === storedUsername)) {
-            usuariosRegistrados.unshift({ username: storedUsername }); // Añadir al principio si no está
-        }
-
-        // Función para mostrar usuarios registrados
-        function mostrarUsuariosRegistrados() {
-            const listaUsuarios = document.getElementById('lista-usuarios');
-            listaUsuarios.innerHTML = ''; // Limpiar la lista antes de mostrar
-            usuariosRegistrados.forEach((usuario, index) => {
-                const li = document.createElement('li');
-                li.className = "text-[#1e3a8a] font-semibold p-2 border-b border-gray-300"; // Ajustes de estilo
-                li.style.height = '40px'; // Altura fija para todos los campos
-                li.style.display = 'flex';
-                li.style.alignItems = 'center';
-                li.style.justifyContent = 'space-between'; // Espacio entre usuario y botón de eliminar
-
-                // Mostrar el nombre de usuario
-                li.textContent = usuario.username; 
-
-                // Crear botón de eliminar
-                const eliminarButton = document.createElement('button');
-                eliminarButton.textContent = 'Eliminar';
-                eliminarButton.className = "bg-red-500 text-white py-1 px-2 rounded-lg hover:bg-red-600 transition-colors duration-300";
-                eliminarButton.onclick = () => eliminarUsuario(index); // Llamar a la función para eliminar el usuario
-                li.appendChild(eliminarButton); // Añadir el botón al elemento li
-
-                listaUsuarios.appendChild(li); // Añadir el li a la lista
-            });
-        }
-
-        // Función para eliminar un usuario
-        function eliminarUsuario(index) {
-            usuariosRegistrados.splice(index, 1); // Eliminar el usuario del arreglo
-            localStorage.setItem('usuariosRegistrados', JSON.stringify(usuariosRegistrados)); // Actualizar localStorage
-            mostrarUsuariosRegistrados(); // Volver a mostrar la lista actualizada
-        }
-
-        // Llamar a la función para mostrar usuarios al cargar la página
-        document.addEventListener('DOMContentLoaded', mostrarUsuariosRegistrados);
 
         // Manejo del menú desplegable
         const menuButton = document.getElementById('menuButton');
@@ -114,5 +139,3 @@
     </script>
 </body>
 </html>
-
-

@@ -2,13 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="estilos.css">
     <title>Tareas Completadas</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Inicializar Supabase
+        const supabaseUrl = 'https://rpuuislyejuoovdldnss.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwdXVpc2x5ZWp1b292ZGxkbnNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzODYyMjgsImV4cCI6MjA0NDk2MjIyOH0.TPtDnn-o-RN0vm69RKvBUEWfgqZUzQAvvKkR5JxFEoM';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        async function obtenerTareasCompletadas() {
+            const { data: tareas, error } = await supabase
+                .from('tareas')
+                .select('*')
+                .eq('completed', true); // Obtener solo las tareas completadas
+            
+            if (error) {
+                console.error('Error obteniendo tareas completadas:', error);
+            } else {
+                return tareas;
+            }
+        }
+
+        async function eliminarTarea(id) {
+            const { error } = await supabase
+                .from('tareas')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                console.error('Error eliminando tarea:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const lista = document.getElementById('lista');
+
+            // Obtener tareas completadas de la base de datos y mostrarlas
+            const tareasCompletadas = await obtenerTareasCompletadas();
+            if (tareasCompletadas && tareasCompletadas.length > 0) {
+                tareasCompletadas.forEach(tarea => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'flex items-center justify-between mb-2'; // Alinear contenido
+                    listItem.innerHTML = `
+                        <span>${tarea.texto}</span>
+                        <button class="eliminarButton bg-red-500 text-white rounded py-1 px-2 ml-2">Eliminar</button>
+                    `;
+                    lista.appendChild(listItem); // Agregar la tarea a la lista
+
+                    // Agregar evento al botón de eliminar
+                    listItem.querySelector('.eliminarButton').addEventListener('click', async function() {
+                        await eliminarTarea(tarea.id); // Eliminar de la base de datos
+                        lista.removeChild(listItem); // Quitar la tarea de la lista
+                    });
+                });
+            } else {
+                const emptyMessage = document.createElement('p');
+                emptyMessage.textContent = 'No hay tareas completadas.';
+                lista.appendChild(emptyMessage);
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="app-container relative flex size-full min-h-screen flex-col bg-slate-50 justify-between group/design-root overflow-x-hidden" style="font-family: Manrope, 'Noto Sans', sans-serif;">
@@ -40,42 +100,9 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Mostrar nombre de usuario actual
-        const userNameElement = document.getElementById('userName');
-        const storedUsername = localStorage.getItem('username'); // Obtener el nombre de usuario almacenado
-
-        // Cargar todos los usuarios registrados desde localStorage
-        const usuariosRegistrados = JSON.parse(localStorage.getItem('usuariosRegistrados')) || [];
-        const usuarioActual = usuariosRegistrados.find(usuario => usuario.username === storedUsername);
-        userNameElement.textContent = usuarioActual ? usuarioActual.username : 'Usuario no encontrado';
-
-        // Cargar tareas completadas desde localStorage
-        const tareasCompletadas = JSON.parse(localStorage.getItem('tareasCompletadas')) || [];
-        const lista = document.getElementById('lista');
-
-        tareasCompletadas.forEach(tarea => {
-            const listItem = document.createElement('li');
-            listItem.className = 'flex items-center justify-between mb-2'; // Alinear contenido
-            listItem.innerHTML = `
-                <span>${tarea.text}</span>
-                <button class="eliminarButton bg-red-500 text-white rounded py-1 px-2 ml-2">Eliminar</button>
-            `;
-            lista.appendChild(listItem); // Agregar la tarea a la lista
-
-            // Agregar evento al botón de eliminar
-            listItem.querySelector('.eliminarButton').addEventListener('click', function() {
-                const index = tareasCompletadas.indexOf(tarea);
-                if (index > -1) {
-                    tareasCompletadas.splice(index, 1);
-                    localStorage.setItem('tareasCompletadas', JSON.stringify(tareasCompletadas));
-                }
-                lista.removeChild(listItem); // Quitar la tarea de la lista
-            });
-        });
-    </script>
 </body>
 </html>
+
+
 
 
