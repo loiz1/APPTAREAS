@@ -19,18 +19,18 @@ async function mostrarTareas() {
     const { data: tareasAlmacenadas, error } = await supabase
         .from('tareas')
         .select('*');
-    
+
     if (error) {
         console.error("Error al cargar tareas:", error.message);
         return;
     }
 
-    tareasAlmacenadas.forEach((tarea, index) => {
+    tareasAlmacenadas.forEach((tarea) => {
         const li = document.createElement('li');
         li.className = "flex justify-between items-center"; // Estilo para alinear el contenido
         li.innerHTML = `
-            <span>${tarea.tarea}</span>
-            <input type="checkbox" id="checkbox-${index}" ${tarea.completed ? 'checked' : ''}>
+            <span>${tarea.title}</span> 
+            <input type="checkbox" id="checkbox-${tarea.id}" ${tarea.completed ? 'checked' : ''}>
         `;
         lista.appendChild(li);
 
@@ -43,7 +43,7 @@ async function mostrarTareas() {
                 const { error: updateError } = await supabase
                     .from('tareas')
                     .update({ completed: true })
-                    .eq('id', id); // Usar el id de la tarea
+                    .eq('id', tarea.id); // Usar el id de la tarea
 
                 if (updateError) {
                     console.error("Error al actualizar tarea:", updateError.message);
@@ -61,11 +61,13 @@ async function mostrarTareas() {
 taskForm.addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevenir el envío del formulario
     const nuevaTarea = tareaInput.value.trim();
-    if (nuevaTarea) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser (); // Obtener el usuario
+
+    if (nuevaTarea && user) {
         // Agregar la tarea a la base de datos
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from('tareas')
-            .insert([{ tarea: nuevaTarea, completed: false }]);
+            .insert([{ title: nuevaTarea, usuario: user.id, completed: false }]); // Asegúrate de usar 'title' y 'usuario'
 
         if (error) {
             console.error("Error al agregar tarea:", error.message);
@@ -73,6 +75,8 @@ taskForm.addEventListener('submit', async function(event) {
             tareaInput.value = ''; // Limpiar el campo de entrada
             mostrarTareas(); // Actualizar la lista mostrada
         }
+    } else {
+        alert("Por favor, ingresa una tarea y asegúrate de estar registrado.");
     }
 });
 
