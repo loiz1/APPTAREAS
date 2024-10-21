@@ -85,7 +85,7 @@
             const { data: tareas, error } = await supabase
                 .from('tareas')
                 .select('*')
-                
+                .eq('usuario', userId); 
 
             if (error) {
                 console.error('Error al obtener las tareas:', error);
