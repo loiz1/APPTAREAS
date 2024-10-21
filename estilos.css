@@ -5,6 +5,14 @@
     overflow-y: auto; 
     background-color: #87CEEB;
 }
+
+.tareas1 {
+    padding: 1rem; 
+    border-radius: 0.5rem; 
+    max-height: 80px; 
+    overflow-y: auto; 
+    background-color: #87CEEB;
+}
 .dashboard {
     padding: 5%; 
     border-radius: 0.5rem;   
@@ -143,6 +151,14 @@
     cursor: pointer;
     margin-left: 10px; /* Agregar margen a la izquierda */
 }
+.lista1 li input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%; /* Hacer el checkbox más redondo */
+    cursor: pointer;
+    margin-left: 10px; /* Agregar margen a la izquierda */
+}
+
 
 
 .botones-inferiores {
