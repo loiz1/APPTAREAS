@@ -1,17 +1,37 @@
-
 .tareas {
     padding: 1rem; 
     border-radius: 0.5rem; 
-    max-height: 380px; 
+    max-height: 80px; 
     overflow-y: auto; 
     background-color: #87CEEB;
 }
-
-.title {
-    margin-top: 30px;
+.dashboard {
+    padding: 5%; 
+    border-radius: 0.5rem;   
+    background-color: #87CEEB;
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
 }
 
+.user-list {
+    display: flex;
+    flex-direction: row;
+    
+    margin-bottom: 20px;
+}
 
+.user-list button { /* Estilos para los botones de usuario */
+    background-color: #b0e0e6; 
+    color: rgb(56, 13, 13); 
+    border: none;
+    padding: 8px 12px; 
+    border-radius: 5px; 
+    margin-right: 5px;
+}
+.title {
+    margin-top: 20px;
+}
 .tareas::-webkit-scrollbar {
     width: 8px; 
 }
@@ -57,22 +77,73 @@
     border-radius: 10px;
     background-color: #f5f5f5;
 }
-
+#taskForm {
+    padding: 1%;
+    display: none; /* Ocultar el formulario inicialmente */
+  }
+    
 .input-tarea {
-    width: 100%;
-    padding: 10px;
+    width: 60%; 
+    height: 30%;
+    padding: 6px 20px;
     margin-bottom: 10px;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
+    margin-right: 10px; /* Espacio entre el input y el botón */
+}
+
+.btn-enviar {
+    width: 40%; 
+    height: 60%;
+    padding-top: 100px;
+    background-color: #1E90FF;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap; 
+    padding: 6px 20px;
+}
+.btn-creartar {
+    width: 40%; 
+    height: 60%;
+    padding-top: 100px;
+    background-color: #778908;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap; 
+    padding: 6px 20px;
+}
+.btn-enviar:hover {
+    background-color: #0e5ba9;
+}
+.lista li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #b0e0e6;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: hwb(234 3% 51%);
 }
 
 .lista li input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    border-radius: 4px;
+    border-radius: 50%; /* Hacer el checkbox más redondo */
     cursor: pointer;
+    margin-left: 10px; /* Agregar margen a la izquierda */
 }
+
 
 .botones-inferiores {
     display: flex;
@@ -94,21 +165,8 @@
 .btn-inferior:hover {
     background-color: #1C86EE;
 }
+   
 
-.btn-enviar {
-    padding: 8px 20px;
-    background-color: #1E90FF;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.btn-enviar:hover {
-    background-color: #1C86EE;
-}
 /* Padding para despues del imput */
 input[type="text"] {
     margin-bottom: 8px;

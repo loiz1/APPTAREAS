@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">   
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"  rel="stylesheet">
     <link rel="stylesheet" href="estilos.css">   
-    <title>Menu Principal</title>
+    <title>Menu Personal</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     
     <style>
@@ -27,7 +27,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/11356/11356308.png" alt="Usuario" class="w-8 h-8 mr-2">
                     <span id="username" class="text-[#1e3a8a] font-semibold"></span>
                 </div>
-                <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Compartidas</h1>
+                
                 <div class="menu-button">
                     <img src="https://cdn-icons-png.flaticon.com/512/1756/1756647.png" alt="Menú" class="cursor-pointer w-8 h-8" id="menuButton">
                     <div class="dropdown" id="dropdownMenu">
@@ -36,20 +36,29 @@
                     </div>
                 </div>
             </div>
-            <div class="add_task mt-4">
-                <form id="taskForm" class="flex flex-col w-full">
+            <div id="taskForm1" class="flex flex-col w-full">
+                <input type="submit" class="btn-creartar" value="Nueva Tarea">
+            </div>
+            <div class="add_task">
+                <form id="taskForm" class="flex flex-row w-full">
                     <input type="text" id="tareaInput" placeholder="Agrega tu tarea" class="input-tarea border rounded-md p-2" required>
-                    <input type="submit" class="btn-enviar bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center" value="Agregar Tarea">
+                    <input type="submit" class="btn-enviar" value="Agregar Tarea">
                 </form>
             </div>
-
-            <div class="tareas mt-4" style="max-height: 380px; overflow-y: auto;">
+            <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] text-center">Tareas Pendientes</h1>
+            <div class="tareas mt-4" style="max-height: 120px; overflow-y: auto;">
                 <ul class="lista" id="lista"></ul>
             </div>
+            <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] text-center">Tareas Realizadas</h1>
+            <div class="tareas mt-4" style="max-height: 120px; overflow-y: auto;">
+                <ul class="lista" id="lista"></ul>
+            </div>
+            
+
 
             <div class="botones-inferiores mt-4 flex justify-around">
                 <a href="dashboard.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Dashboard</a>
-                <a href="owntask.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Mis Tareas</a>
+                <a href="index.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">inicio</a>
                 <a href="team.html" class="btn-inferior bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center">Team</a>
             </div>
         </div>
@@ -124,9 +133,21 @@
                 });
             });
         }
+        // Boton para mostrar input de tarea
+            const btnCrearTarea = document.querySelector('.btn-creartar');
+            const formulario = document.getElementById('taskForm');
+        // Mostrar el formulario al hacer clic en el botón
+            btnCrearTarea.addEventListener('click', () => {
+            formulario.style.display = 'flex';
+        });
+        // Ocultar el formulario al quitar el cursor
+            formulario.addEventListener('mouseleave', () => {
+            formulario.style.display = 'none';
+        });
+
 
         // Manejar el evento de envío del formulario
-        taskForm.addEventListener('submit', async function(event) {
+            taskForm.addEventListener('submit', async function(event) {
             event.preventDefault(); 
 
             const nuevaTarea = tareaInput.value.trim(); // Eliminar espacios en blanco al inicio y final

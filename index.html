@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://necolas.github.io/normalize.css/3.0.2/normalize.css">   
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"  rel="stylesheet">
     <link rel="stylesheet" href="estilos.css">   
-    <title>Menu Principal</title>
+    <title>Menu Personal</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     
     <style>
@@ -27,7 +27,7 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/11356/11356308.png" alt="Usuario" class="w-8 h-8 mr-2">
                     <span id="username" class="text-[#1e3a8a] font-semibold"></span>
                 </div>
-                <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Compartidas</h1>
+                <h1 class="title text-[#1e3a8a] text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Tareas Grupales</h1>
                 <div class="menu-button">
                     <img src="https://cdn-icons-png.flaticon.com/512/1756/1756647.png" alt="Menú" class="cursor-pointer w-8 h-8" id="menuButton">
                     <div class="dropdown" id="dropdownMenu">
@@ -36,14 +36,14 @@
                     </div>
                 </div>
             </div>
-            <div class="add_task mt-4">
-                <form id="taskForm" class="flex flex-col w-full">
-                    <input type="text" id="tareaInput" placeholder="Agrega tu tarea" class="input-tarea border rounded-md p-2" required>
-                    <input type="submit" class="btn-enviar bg-[#2db1f9] text-white py-2 px-4 rounded-lg text-center" value="Agregar Tarea">
+            <div class="add_task">
+                <form id="taskForm" class="flex flex-row w-full">
+                    <input type="text" id="tareaInput" placeholder="Agregar tarea grupal" class="input-tarea border rounded-md p-1" required>
+                    <input type="submit" class="btn-enviar" value="Agregar Tarea">
                 </form>
             </div>
 
-            <div class="tareas mt-4" style="max-height: 380px; overflow-y: auto;">
+            <div class="tareas" style="max-height: 380px; overflow-y: auto;">
                 <ul class="lista" id="lista"></ul>
             </div>
 
@@ -85,7 +85,6 @@
             const { data: tareas, error } = await supabase
                 .from('tareas')
                 .select('*')
-                
 
             if (error) {
                 console.error('Error al obtener las tareas:', error);
@@ -97,8 +96,8 @@
             tareas.forEach(tarea => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <input type="checkbox" class="checkbox-tarea" data-id="${tarea.id}" 
-                    <span class\="</span>' : ''}">${tarea.title}</span> 
+                    <span class="${tarea.completado ? 'tarea-completada' : ''}">${tarea.title}</span> 
+                    <input type="checkbox" class="checkbox-tarea" data-id="${tarea.id}" ${tarea.completado ? 'checked' : ''} ${tarea.usuario === userId ? 'disabled' : ''}>
                 `;
                 lista.appendChild(li);
             });
@@ -112,7 +111,7 @@
 
                     const { error } = await supabase
                         .from('tareas')
-                        .update({ completed: completed })
+                        .update({ completed: completed, usuario: userId }) // Asignar la tarea al usuario
                         .eq('id', tareaId);
 
                     if (error) {
